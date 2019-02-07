@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources\Product;
 
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\Resource;
 
-class ProductCollection extends ResourceCollection
+class ProductCollection extends Resource
 {
     /**
      * Transform the resource collection into an array.
@@ -15,12 +15,15 @@ class ProductCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
+            'name'=>$this->name,
+                        
+            'totalPrice'=>$this->discount==0 ?  $this->price : $this->price - (($this->discount/100) * ($this->price )),
 
-            'data' => $this->collection,
-            'links' => [
-                'self' => 'link-value',
-            ],
+            'rating' => $this->reviews->count() > 0 ? round($this->reviews->sum('star')/$this->reviews->count(),2): 'No Rating yet',
 
-        ];
+            'href'=>[
+                'link'=>route('products.show', $this->id)
+                ]
+            ];
     }
 }
